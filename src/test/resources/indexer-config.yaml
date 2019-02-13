@@ -1,0 +1,24 @@
+indexScheduleInterval: 5000
+instances:
+ - identifier: accesslog
+   host: localhost
+   port: 9200
+   indexMode: STATIC_NAME
+   indexNameOrPattern: accesslog
+ - identifier: applicationlog
+   host: localhost
+   port: 9200
+   indexMode: DATE_PATTERN_EVENT_TIMESTAMP
+   indexNameOrPattern: applicationlog-yyyyMMdd
+ - identifier: accesslog_ssl
+   host: localhost
+   port: 9200
+   indexMode: DATE_PATTERN_INDEX_TIMESTAMP
+   indexNameOrPattern: accesslog-yyyyMMdd
+   ssl: true
+   sslTrustAll: true
+   authentication:
+     type : basic
+     config:
+       user : elastic
+       password : PleaseChangeMe

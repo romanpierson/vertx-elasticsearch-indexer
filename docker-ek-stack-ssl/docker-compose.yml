@@ -1,0 +1,77 @@
+version: '2.2'
+
+services:
+  es01:
+    container_name: es01
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    environment:
+      - node.name=es01
+      - discovery.zen.minimum_master_nodes=2
+      - ELASTIC_PASSWORD=$ELASTIC_PASSWORD 
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.license.self_generated.type=trial 
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate 
+      - xpack.ssl.certificate_authorities=$CERTS_DIR/ca/ca.crt
+      - xpack.ssl.certificate=$CERTS_DIR/es01/es01.crt
+      - xpack.ssl.key=$CERTS_DIR/es01/es01.key
+    volumes: ['./elasticsearch01/data:/usr/share/elasticsearch/data', './certs:$CERTS_DIR']
+    ports:
+      - 9200:9200
+    networks:
+      - ek
+    healthcheck:
+      test: curl --cacert $CERTS_DIR/ca/ca.crt -s https://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  es02:
+    container_name: es02
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    environment:
+      - node.name=es02
+      - discovery.zen.minimum_master_nodes=2
+      - ELASTIC_PASSWORD=$ELASTIC_PASSWORD
+      - discovery.zen.ping.unicast.hosts=es01
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.license.self_generated.type=trial
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.ssl.certificate_authorities=$CERTS_DIR/ca/ca.crt
+      - xpack.ssl.certificate=$CERTS_DIR/es02/es02.crt
+      - xpack.ssl.key=$CERTS_DIR/es02/es02.key
+    networks:
+      - ek
+    volumes: ['./elasticsearch02/data:/usr/share/elasticsearch/data', './certs:$CERTS_DIR']
+
+  wait_until_ready:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    command: /usr/bin/true
+    depends_on: {"es01": {"condition": "service_healthy"}}
+    
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:6.5.4
+    environment:
+      - elasticsearch.ssl.certificateAuthorities=$CERTS_DIR/ca/ca.crt
+      - xpack.security.enabled=false
+      - xpack.license.self_generated.type=trial
+      - ELASTICSEARCH_URL="http://es01:9200"
+    ports:
+      - 5601:5601
+    networks:
+      - ek
+    depends_on:
+      - es01  
+
+volumes: {"esdata_01": {"driver": "local"}, "esdata_02": {"driver": "local"}}
+
+networks:
+
+  ek:
+    driver: bridge

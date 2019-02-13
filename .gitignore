@@ -1,0 +1,12 @@
+.gradle
+.classpath
+org.eclipse.jdt.core.prefs
+bin
+build
+.project
+docker-ek-stack-ssl/elasticsearch01
+docker-ek-stack-ssl/elasticsearch02
+docker-ek-stack/elasticsearch01
+docker-ek-stack/elasticsearch02
+docker-ek-stack-ssl/certs
+.vertx
