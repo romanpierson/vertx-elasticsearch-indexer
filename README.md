@@ -125,7 +125,7 @@ Version | ES version
 
 ## Changelog
 
-### 1.0.0 (2019-02-13)
+### 1.0.0 (2019-02-14)
 
 * Initial version
 

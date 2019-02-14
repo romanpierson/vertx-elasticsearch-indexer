@@ -31,8 +31,8 @@ dependencies {
 sourceCompatibility='1.8'
 targetCompatibility='1.8'
 
-jar.archiveName = "vertx-elasticsearch-indexer-1.0.0_Beta.jar"
-bintrayUpload.packageName = "vertx-elasticsearch-indexer-1.0.0_Beta.jar"
+jar.archiveName = "vertx-elasticsearch-indexer-1.0.0.jar"
+bintrayUpload.packageName = "vertx-elasticsearch-indexer-1.0.0.jar"
 
 task sourceJar(type: Jar) {
     from sourceSets.main.allJava
@@ -44,7 +44,7 @@ publishing {
             
             groupId 'com.mdac'
             artifactId 'vertx-elasticsearch-indexer'
-            version '1.0.0_Beta'
+            version '1.0.0'
             
             from components.java
 
@@ -72,7 +72,7 @@ bintray {
         override = false
         vcsUrl = 'https://github.com/romanpierson/vertx-elasticsearch-indexer.git'
         version {
-        	name = '1.0.0_Beta'
+        	name = '1.0.0'
         }
     }
 }
