@@ -11,16 +11,22 @@ apply plugin: 'eclipse'
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
+apply plugin: 'jacoco'
 
 dependencies {
 
 	
-	compile 'io.vertx:vertx-web-client:3.6.3'
-    
-    testCompile 'io.vertx:vertx-core:3.6.3'
-    testCompile 'io.vertx:vertx-config:3.6.3'
-	testCompile 'io.vertx:vertx-config-yaml:3.6.3'
-	testCompile 'junit:junit:4.12'
+	compile 'io.vertx:vertx-web-client:4.0.0-milestone1'
+    compile 'org.slf4j:slf4j-api:1.7.26'
+	
+    testCompile 'io.vertx:vertx-core:4.0.0-milestone1'
+    testCompile 'io.vertx:vertx-config:4.0.0-milestone1'
+	testCompile 'io.vertx:vertx-config-yaml:4.0.0-milestone1'
+	
+	testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0")
+    testCompile("org.junit.platform:junit-platform-launcher:1.5.0")
+	
     
 	testRuntime 'ch.qos.logback:logback-classic:1.2.3'
     
@@ -31,11 +37,16 @@ dependencies {
 sourceCompatibility='1.8'
 targetCompatibility='1.8'
 
-jar.archiveName = "vertx-elasticsearch-indexer-1.0.0.jar"
-bintrayUpload.packageName = "vertx-elasticsearch-indexer-1.0.0.jar"
+jar.archiveName = "vertx-elasticsearch-indexer-1.1.0_RC1.jar"
+bintrayUpload.packageName = "vertx-elasticsearch-indexer-1.1.0_RC1.jar"
 
 task sourceJar(type: Jar) {
     from sourceSets.main.allJava
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }
 
 publishing {
@@ -44,7 +55,7 @@ publishing {
             
             groupId 'com.mdac'
             artifactId 'vertx-elasticsearch-indexer'
-            version '1.0.0'
+            version '1.1.0_RC1'
             
             from components.java
 
@@ -72,12 +83,19 @@ bintray {
         override = false
         vcsUrl = 'https://github.com/romanpierson/vertx-elasticsearch-indexer.git'
         version {
-        	name = '1.0.0'
+        	name = '1.1.0_RC1'
         }
     }
 }
 
+jacocoTestReport {
+	reports {
+		xml.enabled = true
+		html.enabled = true
+	}
+}
+
 wrapper() {
-  gradleVersion = '5.0'
+  gradleVersion = '5.5.1'
 }
 

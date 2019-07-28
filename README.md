@@ -1,4 +1,6 @@
-[![Build Status](https://travis-ci.org/romanpierson/vertx-elasticsearch-indexer.svg?branch=master)](https://travis-ci.org/romanpierson/vertx-elasticsearch-indexer) ![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)
+[![Build Status](https://travis-ci.org/romanpierson/vertx-elasticsearch-indexer.svg?branch=master)](https://travis-ci.org/romanpierson/vertx-elasticsearch-indexer) 
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=romanpierson_vertx-elasticsearch-indexer&metric=coverage)](https://sonarcloud.io/dashboard?id=romanpierson_vertx-elasticsearch-indexer)
+![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)
 
 # vertx-elasticsearch-indexer
 
@@ -12,7 +14,7 @@ Just add it as a dependency to your project (gradle example)
 
 ```xml
 dependencies {
-	compile 'com.mdac:vertx-elasticsearch-indexer:1.0.0'
+	compile 'com.mdac:vertx-elasticsearch-indexer:1.1.0_RC1'
 }
 ```
 
@@ -117,6 +119,7 @@ PUT _template/template_accesslog
 Version | ES version
 ----|------ 
 1.0.0 | 6.5.4 (To be checked with earlier 6x versions)
+1.1.0_RC1 | 6.5.4 (To be checked with earlier 6x versions)
 
 ## Known Issues and to be fixed
 
@@ -129,4 +132,6 @@ Version | ES version
 
 * Initial version
 
+### 1.1.0_RC1 (2019-07-28)
 
+* Upgrade to Vertx 4
