@@ -14,7 +14,7 @@ Just add it as a dependency to your project (gradle example)
 
 ```xml
 dependencies {
-	compile 'com.mdac:vertx-elasticsearch-indexer:1.1.0_RC1'
+	compile 'com.mdac:vertx-elasticsearch-indexer:1.1.0'
 }
 ```
 
@@ -119,7 +119,7 @@ PUT _template/template_accesslog
 Version | ES version
 ----|------ 
 1.0.0 | 6.5.4 (To be checked with earlier 6x versions)
-1.1.0_RC1 | 6.5.4 (To be checked with earlier 6x versions)
+1.1.0 | 6.5.4 (To be checked with earlier 6x versions)
 
 ## Known Issues and to be fixed
 
@@ -132,6 +132,6 @@ Version | ES version
 
 * Initial version
 
-### 1.1.0_RC1 (2019-07-28)
+### 1.1.0 (2020-12-17)
 
 * Upgrade to Vertx 4
