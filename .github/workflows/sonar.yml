@@ -19,5 +19,5 @@ jobs:
           java-version: 17
           distribution: temurin
       - name: Build project
-        run: ./gradlew clean build sonar
+        run: ./gradlew build sonar --info
  

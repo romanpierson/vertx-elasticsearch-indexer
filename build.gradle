@@ -71,6 +71,7 @@ sonar {
     property "sonar.sources", "src/main"
     property "sonar.tests", "src/test"
     property "sonar.test.exclusions", "**/src/test/**"
+    property "sonar.gradle.skipCompile", "true"
   }
 }
 
