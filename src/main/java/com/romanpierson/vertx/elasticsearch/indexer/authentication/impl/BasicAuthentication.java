@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2019 Roman Pierson
+ * Copyright (c) 2016-2024 Roman Pierson
  * ------------------------------------------------------
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Apache License v2.0 
@@ -10,11 +10,11 @@
  *
  * You may elect to redistribute this code under either of these licenses.
  */
-package com.mdac.vertx.elasticsearch.indexer.authentication.impl;
+package com.romanpierson.vertx.elasticsearch.indexer.authentication.impl;
 
 import java.util.Base64;
 
-import com.mdac.vertx.elasticsearch.indexer.authentication.Authentication;
+import com.romanpierson.vertx.elasticsearch.indexer.authentication.Authentication;
 
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;

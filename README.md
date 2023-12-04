@@ -1,6 +1,7 @@
-[![Build Status](https://travis-ci.org/romanpierson/vertx-elasticsearch-indexer.svg?branch=master)](https://travis-ci.org/romanpierson/vertx-elasticsearch-indexer) 
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=romanpierson_vertx-elasticsearch-indexer&metric=coverage)](https://sonarcloud.io/dashboard?id=romanpierson_vertx-elasticsearch-indexer)
-![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)
+[![Build Status (5.x)](https://github.com/romanpierson/vertx-web-accesslog/actions/workflows/ci-vert.x-5.x.yml/badge.svg)](https://github.com/romanpierson/vertx-elasticsearch-indexer/actions/workflows/ci-vert.x-5.x.yml)
+[![Build Status (4.x)](https://github.com/romanpierson/vertx-web-accesslog/actions/workflows/ci-vert.x-4.x.yml/badge.svg)](https://github.com/romanpierson/vertx-elasticsearch-indexer/actions/workflows/ci-vert.x-4.x.yml)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=romanpierson_vertx-web-accesslog&metric=coverage)](https://sonarcloud.io/dashboard?id=romanpierson_vertx-elasticsearch-indexer)
+[![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/vert-x3/vertx-awesome)
 
 # vertx-elasticsearch-indexer
 
@@ -8,13 +9,13 @@ A verticle that receives index data via event bus and indexes to the correspondi
 
 ## Technical Usage
 
-The artefact is published on bintray / jcenter (https://bintray.com/romanpierson/maven/com.mdac.vertx-elasticsearch-indexer)
+The artefact is published on maven central.
 
 Just add it as a dependency to your project (gradle example)
 
 ```xml
 dependencies {
-	compile 'com.mdac:vertx-elasticsearch-indexer:1.1.0'
+	compile 'com.romanpierson:vertx-elasticsearch-indexer:1.2.0'
 }
 ```
 

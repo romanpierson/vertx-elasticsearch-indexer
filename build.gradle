@@ -2,21 +2,19 @@ plugins {
 	id 'java'
 	id 'maven-publish'
 	id 'jacoco'
-    id "com.jfrog.bintray" version "1.8.5"
+    id "org.sonarqube" version "4.0.0.2929"
 }
 
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 ext{
-	vertxVersion = '4.0.0'
-	jupiterVersion = '5.7.0'
-	jupiterLauncherVersion ='1.7.0'
-	slfApiVersion = '1.7.30'
-	jacksonDatabindVersion = '2.12.0'
-	logbackVersion = '1.2.3'
+	vertxVersion = '4.5.0'
+	jupiterVersion = '5.10.0'
+	jupiterLauncherVersion = '1.10.0'
+	slfApiVersion = '2.0.9'
+	logbackVersion = '1.4.11'
 }
 
 dependencies {
@@ -37,20 +35,18 @@ dependencies {
     
 }
 
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
 
 sourceCompatibility='1.8'
 targetCompatibility='1.8'
 
-jar.archiveFileName = "vertx-elasticsearch-indexer-1.1.0.jar"
-bintrayUpload.packageName = "vertx-elasticsearch-indexer-1.1.0.jar"
+jar.archiveFileName = "vertx-elasticsearch-indexer-4.5.0-SNAPSHOT.jar"
 
-task sourceJar(type: Jar) {
-    from sourceSets.main.allJava
-}
-
-test {
-    useJUnitPlatform()
-    finalizedBy jacocoTestReport
+java {
+    withSourcesJar()
 }
 
 publishing {
@@ -59,47 +55,30 @@ publishing {
             
             groupId 'com.mdac'
             artifactId 'vertx-elasticsearch-indexer'
-            version '1.1.0'
+            version '4.5.0-SNAPSHOT'
             
             from components.java
 
-            artifact sourceJar {
-                classifier "sources"
-            }
         }
     }
 }
 
-bintray {
-	user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
-	key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
-    
-    publications = ['mavenJava']
-    dryRun = false
-    publish = true
-    pkg {
-        repo = 'maven'
-        name = 'com.mdac.vertx-elasticsearch-indexer'
-        licenses = ['Apache-2.0']
-        labels = ['vertx', 'elasticsearch', 'indexer']
-        publicDownloadNumbers = true
-        //Optional version descriptor
-        override = false
-        vcsUrl = 'https://github.com/romanpierson/vertx-elasticsearch-indexer.git'
-        version {
-        	name = '1.1.0'
-        }
+sonarqube {
+    properties {
+    	property "sonar.sources", "src/main"
+    	property "sonar.tests", "src/test"
+        property "sonar.test.exclusions", "**/src/test/**"
     }
 }
+
 
 jacocoTestReport {
 	reports {
-		xml.enabled = true
-		html.enabled = true
+		xml.required = true
+		html.required = true
 	}
 }
 
 wrapper() {
-  gradleVersion = '6.7.1'
+  gradleVersion = '8.0.2'
 }
-

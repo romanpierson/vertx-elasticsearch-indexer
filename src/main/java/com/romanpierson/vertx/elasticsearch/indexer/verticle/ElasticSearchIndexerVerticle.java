@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2019 Roman Pierson
+ * Copyright (c) 2016-2024 Roman Pierson
  * ------------------------------------------------------
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Apache License v2.0 
@@ -10,7 +10,7 @@
  *
  * You may elect to redistribute this code under either of these licenses.
  */
-package com.mdac.vertx.elasticsearch.indexer.verticle;
+package com.romanpierson.vertx.elasticsearch.indexer.verticle;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -27,11 +27,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
-import com.mdac.vertx.elasticsearch.indexer.ElasticSearchIndexerConfiguration;
-import com.mdac.vertx.elasticsearch.indexer.ElasticSearchIndexerConfiguration.IndexMode;
-import com.mdac.vertx.elasticsearch.indexer.ElasticSearchIndexerConstants;
-import com.mdac.vertx.elasticsearch.indexer.ElasticSearchIndexerConstants.Configuration;
-import com.mdac.vertx.elasticsearch.indexer.authentication.impl.BasicAuthentication;
+import com.romanpierson.vertx.elasticsearch.indexer.ElasticSearchIndexerConfiguration;
+import com.romanpierson.vertx.elasticsearch.indexer.ElasticSearchIndexerConfiguration.IndexMode;
+import com.romanpierson.vertx.elasticsearch.indexer.ElasticSearchIndexerConstants;
+import com.romanpierson.vertx.elasticsearch.indexer.ElasticSearchIndexerConstants.Configuration;
+import com.romanpierson.vertx.elasticsearch.indexer.authentication.impl.BasicAuthentication;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;

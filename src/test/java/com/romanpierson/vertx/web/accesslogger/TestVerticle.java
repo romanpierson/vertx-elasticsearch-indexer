@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2019 Roman Pierson
+ * Copyright (c) 2016-2024 Roman Pierson
  * ------------------------------------------------------
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Apache License v2.0 
@@ -10,14 +10,14 @@
  *
  * You may elect to redistribute this code under either of these licenses.
  */
-package com.mdac.vertx.web.accesslogger;
+package com.romanpierson.vertx.web.accesslogger;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import com.mdac.vertx.elasticsearch.indexer.ElasticSearchIndexerConstants;
-import com.mdac.vertx.elasticsearch.indexer.verticle.ElasticSearchIndexerVerticle;
+import com.romanpierson.vertx.elasticsearch.indexer.ElasticSearchIndexerConstants;
+import com.romanpierson.vertx.elasticsearch.indexer.verticle.ElasticSearchIndexerVerticle;
 
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
