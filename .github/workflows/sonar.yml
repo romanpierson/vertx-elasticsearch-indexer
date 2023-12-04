@@ -10,7 +10,7 @@ jobs:
     name: SonarCloud
     env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
-        SONAR_TOKEN: ${{ secrets.sonarcloud }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -19,5 +19,5 @@ jobs:
           java-version: 17
           distribution: temurin
       - name: Build project
-        run: ./gradlew clean build  sonar
+        run: ./gradlew clean build sonar
  
