@@ -126,13 +126,8 @@ Version | ES version
 
 * Failure handling is implemented BUT there is no mechanism built yet to retry / temporary store the failed entries 
 
-
 ## Changelog
 
-### 1.0.0 (2019-02-14)
+Detailed changelog can be found [here](https://github.com/romanpierson/vertx-elasticsearch-indexer/blob/master/CHANGELOG.md).
 
-* Initial version
 
-### 1.1.0 (2020-12-17)
-
-* Upgrade to Vertx 4

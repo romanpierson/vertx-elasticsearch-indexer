@@ -40,10 +40,12 @@ test {
     finalizedBy jacocoTestReport
 }
 
-sourceCompatibility='1.8'
-targetCompatibility='1.8'
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
-jar.archiveFileName = "vertx-elasticsearch-indexer-4.5.0-SNAPSHOT.jar"
+jar.archiveFileName = "vertx-elasticsearch-indexer-1.2.0-RC1.jar"
 
 java {
     withSourcesJar()
@@ -53,9 +55,9 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             
-            groupId 'com.mdac'
+            groupId 'com.romanpierson'
             artifactId 'vertx-elasticsearch-indexer'
-            version '4.5.0-SNAPSHOT'
+            version '1.2.0-RC1'
             
             from components.java
 
@@ -83,5 +85,5 @@ jacocoTestReport {
 }
 
 wrapper() {
-  gradleVersion = '8.0.2'
+  gradleVersion = '8.5'
 }
