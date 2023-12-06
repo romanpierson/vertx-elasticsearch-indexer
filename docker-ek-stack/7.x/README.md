@@ -1,8 +1,8 @@
-# Local Elasticsearch / Kibana Playground Version 8.x (Without SSL)
+# Local Elasticsearch / Kibana Playground Version 7.x (Without SSL)
 
-Dockerized setup for testing 8.x version of Elasticsearch / Kibana
+Dockerized setup for testing 7.x version of Elasticsearch / Kibana
 
-Using latest version `8.11.1`.
+Using latest version `7.17.15`.
 
 Kibana user is `elastic`/`changeme`
 
