@@ -15,6 +15,7 @@ ext{
 	jupiterLauncherVersion = '1.10.0'
 	slfApiVersion = '2.0.9'
 	logbackVersion = '1.4.11'
+	jacksonDatabindVersion = '2.16.0'
 }
 
 dependencies {
@@ -32,6 +33,8 @@ dependencies {
     testImplementation "org.junit.platform:junit-platform-launcher:${jupiterLauncherVersion}"
 	
 	testRuntimeOnly "ch.qos.logback:logback-classic:${logbackVersion}"
+	
+	testRuntimeOnly "com.fasterxml.jackson.core:jackson-databind:${jacksonDatabindVersion}"
     
 }
 

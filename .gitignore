@@ -11,3 +11,4 @@ docker-ek-stack/elasticsearch02
 docker-ek-stack-ssl/certs
 .vertx
 gradle.properties
+docker-ek-stack/8.x/data
