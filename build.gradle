@@ -46,7 +46,7 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-jar.archiveFileName = "vertx-elasticsearch-indexer-1.2.0.jar"
+jar.archiveFileName = "vertx-elasticsearch-indexer-1.2.0-RC1.jar"
 
 java {
     withSourcesJar()
@@ -58,7 +58,7 @@ publishing {
             
             groupId 'com.romanpierson'
             artifactId 'vertx-elasticsearch-indexer'
-            version '1.2.0'
+            version '1.2.0-RC1'
             
             from components.java
 
