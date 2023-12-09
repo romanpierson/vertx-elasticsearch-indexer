@@ -20,6 +20,7 @@ public interface ElasticSearchIndexerConstants {
 		
 		static final String INSTANCES = "instances";
 		static final String IDENTIFIER = "identifier";
+		static final String FLAVOUR = "flavour";
 		static final String HOST = "host";
 		static final String PORT = "port";
 		static final String INDEX_MODE = "indexMode";

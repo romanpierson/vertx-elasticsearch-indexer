@@ -6,6 +6,7 @@
 # vertx-elasticsearch-indexer
 
 A verticle that receives index data via event bus and indexes to the corresponding ElasticSearch instance(s). The whole configuration is maintained on the verticle itself.
+Also Axiom.co is supoorted in latest version.
 
 ## Technical Usage
 
@@ -72,13 +73,13 @@ For `IndexMode.DATE_PATTERN_EVENT_TIMESTAMP` and `DATE_PATTERN_INDEX_TIMESTAMP` 
 
 ### Authentication
 
-In order to simplify things for now its only possible to use Basic Authentication. ES also supports Authentication via OAuth tokens but this is not supported for now.
+In order to simplify things for now its only possible to use Basic or BearerAuthentication. ES also supports Authentication via OAuth tokens but this is not supported for now.
 
 Also AWS authentication is planned on the roadmap.
 
 ## Setup ES Cluster
 
-In order to simplify testing this project contains two docker-compose setups including each a simple ES cluster and Kibana instance (one version with SSL).
+In order to simplify testing this project contains docker-compose setups for ES 7.x and 8.x without SSL (However you change it in the compose file easily to use SSL).
 
 ### Define global index template
 
@@ -115,12 +116,34 @@ PUT _template/template_accesslog
 }
 ```
 
-## Compatibility
+
+## ES Compatibility
 
 Version | ES version
 ----|------ 
-1.0.0 | 6.5.4 (To be checked with earlier 6x versions)
+1.2.0 | 7.x > (6.x is not supported anymore as it still has mandatory doc type mapping)
 1.1.0 | 6.5.4 (To be checked with earlier 6x versions)
+1.0.0 | 6.5.4 (To be checked with earlier 6x versions)
+
+## Axiom Support
+
+With latest version `1.2.0` and as Axiom.co provides a ES compatible bulk API you can easily index into this logging provider as well.
+
+A sample configuration looks like this
+
+```
+ - identifier: axiom-accesslog
+   flavour: AXIOM
+   host: api.axiom.co
+   port: 443
+   indexNameOrPattern: accesslog
+   ssl: true
+   sslTrustAll: false
+   authentication:
+     type : bearer
+     config:
+       token : <TOKEN>
+```
 
 ## Known Issues and to be fixed
 

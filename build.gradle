@@ -15,7 +15,6 @@ ext{
 	jupiterLauncherVersion = '1.10.0'
 	slfApiVersion = '2.0.9'
 	logbackVersion = '1.4.11'
-	jacksonDatabindVersion = '2.16.0'
 }
 
 dependencies {
@@ -34,7 +33,6 @@ dependencies {
 	
 	testRuntimeOnly "ch.qos.logback:logback-classic:${logbackVersion}"
 	
-	testRuntimeOnly "com.fasterxml.jackson.core:jackson-databind:${jacksonDatabindVersion}"
     
 }
 
@@ -48,7 +46,7 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-jar.archiveFileName = "vertx-elasticsearch-indexer-1.2.0-RC1.jar"
+jar.archiveFileName = "vertx-elasticsearch-indexer-1.2.0.jar"
 
 java {
     withSourcesJar()
@@ -60,7 +58,7 @@ publishing {
             
             groupId 'com.romanpierson'
             artifactId 'vertx-elasticsearch-indexer'
-            version '1.2.0-RC1'
+            version '1.2.0'
             
             from components.java
 
