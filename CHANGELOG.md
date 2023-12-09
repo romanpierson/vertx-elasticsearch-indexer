@@ -25,3 +25,4 @@
 * Added BEARER Authentication mode
 * Added support for Axiom.co
 * Added ES 7.x and 8.x playgrounds
+* Removed requirement for jackson databind library
