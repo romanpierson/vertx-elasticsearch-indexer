@@ -13,16 +13,17 @@
 package com.romanpierson.vertx.elasticsearch.indexer;
 
 import com.romanpierson.vertx.elasticsearch.indexer.authentication.Authentication;
+import com.romanpierson.vertx.elasticsearch.indexer.verticle.ElasticSearchIndexerVerticle.IndexFlavour;
 
 public class ElasticSearchIndexerConfiguration {
 
 	private String identifier;
+	private IndexFlavour indexFlavour;
 	
 	private String host;
 	private int port;
 	private IndexMode indexMode;
 	private String indexNameOrPattern;
-	private String type = "_doc";
 	
 	private boolean isSSL = false;
 	private boolean isSSLTrustAll = false;
@@ -48,6 +49,14 @@ public class ElasticSearchIndexerConfiguration {
 	public ElasticSearchIndexerConfiguration setIdentifier(final String identifier) {
 		
 		this.identifier = identifier;
+		
+		return this;
+		
+	}
+	
+	public ElasticSearchIndexerConfiguration setIndexFlavour(final IndexFlavour indexFlavour) {
+		
+		this.indexFlavour = indexFlavour;
 		
 		return this;
 		
@@ -86,14 +95,6 @@ public class ElasticSearchIndexerConfiguration {
 		
 	}
 	
-	public ElasticSearchIndexerConfiguration setType(final String type) {
-		
-		this.type = type;
-		
-		return this;
-		
-	}
-	
 	public ElasticSearchIndexerConfiguration setIndexMode(final IndexMode indexMode) {
 		
 		this.indexMode = indexMode;
@@ -119,11 +120,6 @@ public class ElasticSearchIndexerConfiguration {
 		return indexNameOrPattern;
 	}
 
-	public String getType() {
-		return type;
-	}
-
-
 	public boolean isSSL() {
 		return isSSL;
 	}
@@ -136,6 +132,11 @@ public class ElasticSearchIndexerConfiguration {
 	public String getIdentifier() {
 		return identifier;
 	}
+	
+	public IndexFlavour getIndexFlavour() {
+		return indexFlavour;
+	}
+	
 
 	public Authentication getAuthentication() {
 		return authentication;

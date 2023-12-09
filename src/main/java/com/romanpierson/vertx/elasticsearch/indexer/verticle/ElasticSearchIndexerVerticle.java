@@ -27,20 +27,24 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.romanpierson.vertx.elasticsearch.indexer.ElasticSearchIndexerConfiguration;
 import com.romanpierson.vertx.elasticsearch.indexer.ElasticSearchIndexerConfiguration.IndexMode;
 import com.romanpierson.vertx.elasticsearch.indexer.ElasticSearchIndexerConstants;
 import com.romanpierson.vertx.elasticsearch.indexer.ElasticSearchIndexerConstants.Configuration;
 import com.romanpierson.vertx.elasticsearch.indexer.authentication.impl.BasicAuthentication;
+import com.romanpierson.vertx.elasticsearch.indexer.authentication.impl.BearerAuthentication;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import io.vertx.ext.web.client.HttpRequest;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.WebClientOptions;
+
+import static com.romanpierson.vertx.elasticsearch.indexer.ElasticSearchIndexerConstants.Message.Structure.Field;
 
 /**
  * 
@@ -64,10 +68,11 @@ import io.vertx.ext.web.client.WebClientOptions;
  */
 public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 
-	private static final String TIMEZONE_UTC = "UTC";
-
 	private final Logger LOG = LoggerFactory.getLogger(this.getClass().getName());
-
+	
+	private static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
+	private static final ZoneId TIMEZONE_ID_UTC = ZoneId.of("UTC");
+	
 	private BlockingQueue<JsonObject> queue = new LinkedBlockingQueue<>();
 
 	private Map<String, ElasticSearchIndexerConfiguration> configurations = new HashMap<>();
@@ -81,16 +86,23 @@ public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 	private final String newLine = "\n";
 	private String cachedStaticIndexPrefix;
 	private Map<String, String> cachedDynamicIndexPrefix = new HashMap<>();
+	
+	public enum IndexFlavour{
+		
+		ELASTIC,
+		AXIOM
+		
+	}
 
 	public ElasticSearchIndexerVerticle() {
 
 		super();
 
 		indexDateModePattern = new SimpleDateFormat("yyyyMMdd");
-		indexDateModePattern.setTimeZone(TimeZone.getTimeZone(TIMEZONE_UTC));
+		indexDateModePattern.setTimeZone(TIMEZONE_UTC);
 
 		indexTimeStampPattern = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-		indexTimeStampPattern.setTimeZone(TimeZone.getTimeZone(TIMEZONE_UTC));
+		indexTimeStampPattern.setTimeZone(TIMEZONE_UTC);
 
 	}
 
@@ -118,8 +130,14 @@ public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 		}
 
 		final JsonObject jsonInstance = (JsonObject) xInstance;
-
-		String identifier = jsonInstance.getString(Configuration.IDENTIFIER);
+		
+		final String identifier = jsonInstance.getString(Configuration.IDENTIFIER);
+		
+		// First detect what index flavour we have
+		final IndexFlavour indexFlavour = getApplicableIndexFlavour(identifier, jsonInstance);
+		
+		// For now we dont further validate each property (eg if it makes sense or not)
+		
 		String host = jsonInstance.getString(Configuration.HOST);
 		Long port = jsonInstance.getLong(Configuration.PORT, null);
 		String indexModeCode = jsonInstance.getString(Configuration.INDEX_MODE);
@@ -128,9 +146,10 @@ public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 		boolean isSSLtrustAll = jsonInstance.getBoolean(Configuration.SSL_TRUST_ALL, false);
 		JsonObject authentication = jsonInstance.getJsonObject(Configuration.AUTHENTICATION, null);
 
-		IndexMode indexMode = IndexMode.valueOf(indexModeCode);
+		IndexMode indexMode = IndexFlavour.AXIOM.equals(indexFlavour) ? IndexMode.STATIC_NAME : IndexMode.valueOf(indexModeCode);
 
 		ElasticSearchIndexerConfiguration config = new ElasticSearchIndexerConfiguration().setIdentifier(identifier)
+				.setIndexFlavour(indexFlavour)
 				.setHost(host).setIndexMode(indexMode).setIndexNameOrPattern(indexNameOrPattern)
 				.setPort(port.intValue());
 
@@ -138,13 +157,42 @@ public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 			config.setSSL(isSSLtrustAll);
 		}
 
-		if (authentication != null && "basic".equals(authentication.getString("type", null))) {
-			// For now we only support basic so we can create the basic authentication
-			// implementation directly
-			config.setAuthentication(new BasicAuthentication(authentication.getJsonObject("config", new JsonObject())));
+		if (authentication != null) {
+			
+			final String authenticationType = authentication.getString("type");
+			
+			if("basic".equalsIgnoreCase(authenticationType)){
+				config.setAuthentication(new BasicAuthentication(authentication.getJsonObject("config", new JsonObject())));
+			} else if("bearer".equalsIgnoreCase(authenticationType)){
+				config.setAuthentication(new BearerAuthentication(authentication.getJsonObject("config", new JsonObject())));
+			} else {
+				throw new RuntimeException("Found invalid authentication type " + authenticationType);
+			}
 		}
 
 		return config;
+	}
+	
+	private IndexFlavour getApplicableIndexFlavour(String instanceIdentifier, JsonObject indexConfig) {
+		
+		final String indexFlavourCode = indexConfig.getString(Configuration.FLAVOUR);
+		
+		if(indexFlavourCode == null) {
+			// To be backward compatible
+			LOG.warn("No index flavour specified for instance [{}] - defaulting to ELASTIC", instanceIdentifier);
+			return IndexFlavour.ELASTIC;
+		}
+		
+		// Try to find if the specified flavour matches we the ones we support
+		for(int i= 0; i < IndexFlavour.values().length; i++) {
+			if(indexFlavourCode.equalsIgnoreCase(IndexFlavour.values()[i].name())) {
+				return IndexFlavour.values()[i];
+			}
+		}
+		
+		// If we come here it means an unsupported flavour was provided
+		throw new RuntimeException(String.format("Flavour [%s] not supported - valid values are %s", indexFlavourCode, IndexFlavour.values()));
+		
 	}
 
 	@Override
@@ -199,9 +247,8 @@ public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 
 		Map<String, List<JsonObject>> valuesByIdentifier = drainedValues.parallelStream()
 				.collect(Collectors.groupingBy(value -> value
-						.getJsonObject(ElasticSearchIndexerConstants.Message.Structure.Field.META.getFieldName())
-						.getString(ElasticSearchIndexerConstants.Message.Structure.Field.INSTANCE_IDENTIFIER
-								.getFieldName())));
+						.getJsonObject(Field.META.getFieldName())
+						.getString(Field.INSTANCE_IDENTIFIER.getFieldName())));
 
 		for (final String identifier : valuesByIdentifier.keySet()) {
 
@@ -272,7 +319,8 @@ public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 		final WebClient webClient = this.webClients.get(indexerConfiguration.getIdentifier());
 
 		HttpRequest<Buffer> request = webClient.post(indexerConfiguration.getPort(), indexerConfiguration.getHost(),
-				"/_bulk");
+				IndexFlavour.ELASTIC.equals(indexerConfiguration.getIndexFlavour()) ? "/_bulk" : String.format("/v1/datasets/%s/elastic/_bulk", indexerConfiguration.getIndexNameOrPattern()));
+		
 		request.putHeader("content-type", "application/json");
 		request.ssl(indexerConfiguration.isSSL());
 
@@ -297,8 +345,7 @@ public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 
 			if (!this.cachedDynamicIndexPrefix.containsKey(cacheKey)) {
 
-				ZonedDateTime tsDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp),
-						ZoneId.of(TIMEZONE_UTC));
+				ZonedDateTime tsDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), TIMEZONE_ID_UTC);
 				// Explicitly not using a DateTimeFormatter as this would require escaping the
 				// whole pattern
 				String formattedIndexPattern = indexerConfiguration.getIndexNameOrPattern()
@@ -307,7 +354,7 @@ public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 						.replaceAll("dd", String.format("%02d", tsDateTime.getDayOfMonth()));
 
 				String formattedIndexPrefix = String.format(
-						"{ \"index\" : { \"_index\" : \"%s\", \"_type\" : \"%s\" } }%s", formattedIndexPattern, "_doc",
+						"{ \"index\" : { \"_index\" : \"%s\" } }%s", formattedIndexPattern,
 						this.newLine);
 
 				this.cachedDynamicIndexPrefix.put(cacheKey, formattedIndexPrefix);
@@ -321,8 +368,8 @@ public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 			if (this.cachedStaticIndexPrefix == null) {
 
 				this.cachedStaticIndexPrefix = String.format(
-						"{ \"index\" : { \"_index\" : \"%s\", \"_type\" : \"%s\" } }%s",
-						indexerConfiguration.getIndexNameOrPattern(), indexerConfiguration.getType(), this.newLine);
+						"{ \"index\" : { \"_index\" : \"%s\" } }%s",
+						indexerConfiguration.getIndexNameOrPattern(), this.newLine);
 
 			}
 
@@ -331,24 +378,17 @@ public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 
 	}
 
-	private String getIndexString(final ElasticSearchIndexerConfiguration indexerConfiguration,
-			final Collection<JsonObject> values) {
+	private String getIndexString(final ElasticSearchIndexerConfiguration indexerConfiguration, final Collection<JsonObject> values) {
 
 		StringBuilder sb = new StringBuilder();
 
 		for (JsonObject value : values) {
 
-			sb.append(getIndexPrefixString(indexerConfiguration,
-					value.getJsonObject(ElasticSearchIndexerConstants.Message.Structure.Field.META.getFieldName())
-							.getLong(ElasticSearchIndexerConstants.Message.Structure.Field.TIMESTAMP.getFieldName())));
+			sb.append(getIndexPrefixString(indexerConfiguration, value.getJsonObject(Field.META.getFieldName()).getLong(Field.TIMESTAMP.getFieldName())));
 
-			JsonObject jsonValue = JsonObject.mapFrom(
-					value.getJsonObject(ElasticSearchIndexerConstants.Message.Structure.Field.MESSAGE.getFieldName()));
+			JsonObject jsonValue = value.getJsonObject(Field.MESSAGE.getFieldName());
 
-			jsonValue.put(ElasticSearchIndexerConstants.Message.Structure.Field.TIMESTAMP.getFieldName(),
-					indexTimeStampPattern.format(value
-							.getJsonObject(ElasticSearchIndexerConstants.Message.Structure.Field.META.getFieldName())
-							.getLong(ElasticSearchIndexerConstants.Message.Structure.Field.TIMESTAMP.getFieldName())));
+			jsonValue.put(Field.TIMESTAMP.getFieldName(), indexTimeStampPattern.format(value.getJsonObject(Field.META.getFieldName()).getLong(Field.TIMESTAMP.getFieldName())));
 
 			sb.append(jsonValue.encode()).append(newLine);
 		}

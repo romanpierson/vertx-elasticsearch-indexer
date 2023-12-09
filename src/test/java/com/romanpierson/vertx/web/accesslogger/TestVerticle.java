@@ -14,7 +14,6 @@ package com.romanpierson.vertx.web.accesslogger;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 import com.romanpierson.vertx.elasticsearch.indexer.ElasticSearchIndexerConstants;
 import com.romanpierson.vertx.elasticsearch.indexer.verticle.ElasticSearchIndexerVerticle;
@@ -42,8 +41,7 @@ public class TestVerticle extends AbstractVerticle {
 	@SuppressWarnings("unused")
 	private Logger LOG = LoggerFactory.getLogger(TestVerticle.class.getName());
 	
-	private final static List<String> identifiers = Arrays.asList("accesslog_ssl"/*, "accesslog", "applicationlog"*/);
-	private final static Random random = new Random();
+	private final static List<String> targetIdentifiers = Arrays.asList("axiom-accesslog", "es-accesslog");
 	
 	public static void main(String[] args) throws InterruptedException {
 		
@@ -61,19 +59,30 @@ public class TestVerticle extends AbstractVerticle {
 		ConfigRetriever retriever = ConfigRetriever.create(vertx,  new ConfigRetrieverOptions().addStore(store));
 				
 		retriever.getConfig(result -> {
-			if(result.succeeded()) {
-				vertx.deployVerticle(ElasticSearchIndexerVerticle.class.getName(), new DeploymentOptions().setConfig(result.result()));
-			
-				vertx.setPeriodic(1000, handler -> {
-					
-					final String randomIdentifier = identifiers.get(random.nextInt(identifiers.size()));
-					
-					JsonObject meta = new JsonObject().put("instance_identifier", randomIdentifier).put("timestamp", System.currentTimeMillis());
-					JsonObject message = new JsonObject().put("message", "A message for identifier [" + randomIdentifier + "]....").put("level", "INFO");
-					
-					vertx.eventBus().send(ElasticSearchIndexerConstants.EVENTBUS_EVENT_NAME, new JsonObject().put("meta", meta).put("message", message));
-				});
-			
+			if (result.succeeded()) {
+				vertx.deployVerticle(ElasticSearchIndexerVerticle.class.getName(),
+						new DeploymentOptions().setConfig(result.result())).onComplete(deploymentId -> {
+							vertx.setPeriodic(1000, handler -> {
+
+								for (String targetIdentifier : targetIdentifiers) {
+
+									final long ts = System.currentTimeMillis();
+									
+									JsonObject meta = new JsonObject().put("instance_identifier", targetIdentifier)
+											.put("timestamp", ts);
+									JsonObject message = new JsonObject()
+											.put("message", String.format("A message for identifier [%s] sent at [%d]....", targetIdentifier, ts))
+											.put("level", "INFO");
+
+									vertx.eventBus().send(ElasticSearchIndexerConstants.EVENTBUS_EVENT_NAME,
+											new JsonObject().put("meta", meta).put("message", message));
+								}
+
+							});
+						}, throwable -> {
+							throw new RuntimeException("Error when deploying ElasticSearchIndexerVerticle", throwable);
+						});
+
 			} else {
 				result.cause().printStackTrace();
 			}
