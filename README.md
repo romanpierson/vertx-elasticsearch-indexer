@@ -6,7 +6,7 @@
 # vertx-elasticsearch-indexer
 
 A verticle that receives index data via event bus and indexes to the corresponding ElasticSearch instance(s). The whole configuration is maintained on the verticle itself.
-Also Axiom.co is supoorted in latest version.
+Also Axiom.co is supported in latest version.
 
 ## Technical Usage
 

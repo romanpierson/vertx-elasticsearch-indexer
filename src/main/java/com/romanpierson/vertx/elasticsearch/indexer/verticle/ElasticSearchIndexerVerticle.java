@@ -84,8 +84,7 @@ public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 	private final DateFormat indexTimeStampPattern;
 
 	private final String newLine = "\n";
-	private String cachedStaticIndexPrefix;
-	private Map<String, String> cachedDynamicIndexPrefix = new HashMap<>();
+	private Map<String, String> cachedIndexPrefix = new HashMap<>();
 	
 	public enum IndexFlavour{
 		
@@ -331,50 +330,56 @@ public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 		return request;
 	}
 
-	private String getIndexPrefixString(final ElasticSearchIndexerConfiguration indexerConfiguration,
-			final long eventTimestamp) {
+	private String getIndexPrefixString(final ElasticSearchIndexerConfiguration indexerConfiguration, final long eventTimestamp) {
 
+		boolean isDynamicCacheIndex = false;
+		String cacheKey = indexerConfiguration.getIdentifier();
+		
 		if (IndexMode.DATE_PATTERN_EVENT_TIMESTAMP.equals(indexerConfiguration.getIndexMode())
 				|| IndexMode.DATE_PATTERN_INDEX_TIMESTAMP.equals(indexerConfiguration.getIndexMode())) {
-
+			
+			isDynamicCacheIndex = true;
+			
 			long timestamp = IndexMode.DATE_PATTERN_EVENT_TIMESTAMP.equals(indexerConfiguration.getIndexMode())
 					? eventTimestamp
 					: System.currentTimeMillis();
 
-			final String cacheKey = indexerConfiguration.getIdentifier() + indexDateModePattern.format(timestamp);
-
-			if (!this.cachedDynamicIndexPrefix.containsKey(cacheKey)) {
-
+			cacheKey = indexerConfiguration.getIdentifier() + indexDateModePattern.format(timestamp);
+			
+		}
+		
+		if (!this.cachedIndexPrefix.containsKey(cacheKey)) {
+			
+			//We still need to create that entry
+			// For static its straight
+			String formattedIndexPattern = indexerConfiguration.getIndexNameOrPattern();
+			
+			if(isDynamicCacheIndex) {
+				
+				long timestamp = IndexMode.DATE_PATTERN_EVENT_TIMESTAMP.equals(indexerConfiguration.getIndexMode())
+						? eventTimestamp
+						: System.currentTimeMillis();
+				
 				ZonedDateTime tsDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), TIMEZONE_ID_UTC);
 				// Explicitly not using a DateTimeFormatter as this would require escaping the
 				// whole pattern
-				String formattedIndexPattern = indexerConfiguration.getIndexNameOrPattern()
+				formattedIndexPattern = indexerConfiguration.getIndexNameOrPattern()
 						.replaceAll("yyyy", String.format("%04d", tsDateTime.getYear()))
 						.replaceAll("MM", String.format("%02d", tsDateTime.getMonthValue()))
 						.replaceAll("dd", String.format("%02d", tsDateTime.getDayOfMonth()));
 
-				String formattedIndexPrefix = String.format(
-						"{ \"index\" : { \"_index\" : \"%s\" } }%s", formattedIndexPattern,
-						this.newLine);
-
-				this.cachedDynamicIndexPrefix.put(cacheKey, formattedIndexPrefix);
-
 			}
-
-			return this.cachedDynamicIndexPrefix.get(cacheKey);
-
-		} else {
-
-			if (this.cachedStaticIndexPrefix == null) {
-
-				this.cachedStaticIndexPrefix = String.format(
-						"{ \"index\" : { \"_index\" : \"%s\" } }%s",
-						indexerConfiguration.getIndexNameOrPattern(), this.newLine);
-
-			}
-
-			return this.cachedStaticIndexPrefix;
+			
+			// Now create the formatted index prefix fragment
+			String formattedIndexPrefix = String.format("{ \"index\" : { \"_index\" : \"%s\" } }%s", formattedIndexPattern, this.newLine);
+			
+			// And cache it
+			this.cachedIndexPrefix.put(cacheKey, formattedIndexPrefix);
 		}
+		
+		// Now we should be able to read it from cache regardless if its static or dynamic
+		return this.cachedIndexPrefix.get(cacheKey);
+		
 
 	}
 
