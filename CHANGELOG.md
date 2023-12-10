@@ -26,3 +26,9 @@
 * Added support for Axiom.co
 * Added ES 7.x and 8.x playgrounds
 * Removed requirement for jackson databind library
+
+### 1.2.1
+
+(2023-12-10)
+
+* Fixed issues with multiple static indexes prefix caching
