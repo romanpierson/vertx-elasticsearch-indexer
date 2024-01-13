@@ -266,24 +266,24 @@ public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 
 			final String indexString = getIndexString(indexerConfiguration, values);
 
-			request.sendBuffer(Buffer.buffer(indexString), ar -> {
-				if (ar.succeeded()) {
-
-					HttpResponse<Buffer> result = ar.result();
+			request
+				.sendBuffer(Buffer.buffer(indexString))
+				.onComplete(ar -> {
 					
-					JsonObject response = result.bodyAsJsonObject();
-					
-					if (result.statusCode() != 200 || response == null || response.getBoolean("errors", true)) {
-						handleError(values, null);
-						LOG.error("Error response received from ES \n{}", response.encodePrettily());
+					if(ar.succeeded()) {
+						HttpResponse<Buffer> result = ar.result();
+						
+						JsonObject response = result.bodyAsJsonObject();
+						
+						if (result.statusCode() != 200 || response == null || response.getBoolean("errors", true)) {
+							handleError(values, null);
+							LOG.error("Error response received from ES \n{}", response.encodePrettily());
+						}
+					} else {
+						handleError(values, ar.cause());
 					}
-
-				} else {
-
-					handleError(values, ar.cause());
-
-				}
-			});
+					
+				});
 
 		}
 

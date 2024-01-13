@@ -57,36 +57,39 @@ public class TestVerticle extends AbstractVerticle {
 										.setConfig(new JsonObject().put("path", "indexer-config.yaml"));
 
 		ConfigRetriever retriever = ConfigRetriever.create(vertx,  new ConfigRetrieverOptions().addStore(store));
+		
+		retriever
+			.getConfig()
+			.onComplete(result -> {
 				
-		retriever.getConfig(result -> {
-			if (result.succeeded()) {
-				vertx.deployVerticle(ElasticSearchIndexerVerticle.class.getName(),
-						new DeploymentOptions().setConfig(result.result())).onComplete(deploymentId -> {
-							vertx.setPeriodic(1000, handler -> {
+				if(result.succeeded()) {
+					vertx.deployVerticle(ElasticSearchIndexerVerticle.class.getName(),
+							new DeploymentOptions().setConfig(result.result())).onComplete(deploymentId -> {
+								vertx.setPeriodic(1000, handler -> {
 
-								for (String targetIdentifier : targetIdentifiers) {
+									for (String targetIdentifier : targetIdentifiers) {
 
-									final long ts = System.currentTimeMillis();
-									
-									JsonObject meta = new JsonObject().put("instance_identifier", targetIdentifier)
-											.put("timestamp", ts);
-									JsonObject message = new JsonObject()
-											.put("message", String.format("A message for identifier [%s] sent at [%d]....", targetIdentifier, ts))
-											.put("level", "INFO");
+										final long ts = System.currentTimeMillis();
+										
+										JsonObject meta = new JsonObject().put("instance_identifier", targetIdentifier)
+												.put("timestamp", ts);
+										JsonObject message = new JsonObject()
+												.put("message", String.format("A message for identifier [%s] sent at [%d]....", targetIdentifier, ts))
+												.put("level", "INFO");
 
-									vertx.eventBus().send(ElasticSearchIndexerConstants.EVENTBUS_EVENT_NAME,
-											new JsonObject().put("meta", meta).put("message", message));
-								}
+										vertx.eventBus().send(ElasticSearchIndexerConstants.EVENTBUS_EVENT_NAME,
+												new JsonObject().put("meta", meta).put("message", message));
+									}
 
+								});
+							}, throwable -> {
+								throw new RuntimeException("Error when deploying ElasticSearchIndexerVerticle", throwable);
 							});
-						}, throwable -> {
-							throw new RuntimeException("Error when deploying ElasticSearchIndexerVerticle", throwable);
-						});
-
-			} else {
-				result.cause().printStackTrace();
-			}
-		});
+				} else {
+					result.cause().printStackTrace();
+				}
+				
+			});
 		
 	}
 	
