@@ -16,7 +16,7 @@ Just add it as a dependency to your project (gradle example)
 
 ```xml
 dependencies {
-	compile 'com.romanpierson:vertx-elasticsearch-indexer:1.2.0'
+	compile 'com.romanpierson:vertx-elasticsearch-indexer:1.3.0'
 }
 ```
 

@@ -10,9 +10,9 @@ repositories {
 }
 
 ext{
-	vertxVersion = '4.5.0'
-	jupiterVersion = '5.10.0'
-	jupiterLauncherVersion = '1.10.0'
+	vertxVersion = '4.5.1'
+	jupiterVersion = '5.10.1'
+	jupiterLauncherVersion = '1.10.1'
 	slfApiVersion = '2.0.9'
 	logbackVersion = '1.4.11'
 }
@@ -46,7 +46,7 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-jar.archiveFileName = "vertx-elasticsearch-indexer-1.2.1.jar"
+jar.archiveFileName = "vertx-elasticsearch-indexer-1.3.0.jar"
 
 java {
     withSourcesJar()
@@ -58,7 +58,7 @@ publishing {
             
             groupId 'com.romanpierson'
             artifactId 'vertx-elasticsearch-indexer'
-            version '1.2.1'
+            version '1.3.0'
             
             from components.java
 

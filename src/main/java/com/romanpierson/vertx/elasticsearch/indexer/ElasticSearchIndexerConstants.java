@@ -24,6 +24,7 @@ public interface ElasticSearchIndexerConstants {
 		static final String HOST = "host";
 		static final String PORT = "port";
 		static final String INDEX_MODE = "indexMode";
+		static final String INDEX_TIMESTAMP_FIELD_NAME = "indexTimestampFieldName";
 		static final String INDEX_NAME_OR_PATTERN = "indexNameOrPattern";
 		static final String SSL = "ssl";
 		static final String SSL_TRUST_ALL = "sslTrustAll";

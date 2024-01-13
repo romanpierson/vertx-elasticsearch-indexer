@@ -32,3 +32,9 @@
 (2023-12-10)
 
 * Fixed issues with multiple static indexes prefix caching
+
+### 1.3.0
+
+(2024-01-13)
+
+* Its now possible to define the name for the timestamp using property `indexTimestampFieldName` - default is `@timestamp` - this in axiom internally translates into `_time`
