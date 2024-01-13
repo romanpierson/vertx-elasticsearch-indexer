@@ -24,6 +24,7 @@ public class ElasticSearchIndexerConfiguration {
 	private int port;
 	private IndexMode indexMode;
 	private String indexNameOrPattern;
+	private String indexTimestampFieldName;
 	
 	private boolean isSSL = false;
 	private boolean isSSLTrustAll = false;
@@ -102,7 +103,13 @@ public class ElasticSearchIndexerConfiguration {
 		return this;
 	}
 	
-	
+	public ElasticSearchIndexerConfiguration setIndexTimestampFieldName(String indexTimestampFieldName) {
+		
+		this.indexTimestampFieldName = indexTimestampFieldName;
+		
+		return this;
+		
+	}
 
 	public String getHost() {
 		return host;
@@ -140,6 +147,10 @@ public class ElasticSearchIndexerConfiguration {
 
 	public Authentication getAuthentication() {
 		return authentication;
+	}
+	
+	public String getIndexTimestampFieldName() {
+		return indexTimestampFieldName;
 	}
 	
 }
