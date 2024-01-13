@@ -34,6 +34,7 @@ import com.romanpierson.vertx.elasticsearch.indexer.ElasticSearchIndexerConfigur
 import com.romanpierson.vertx.elasticsearch.indexer.ElasticSearchIndexerConfiguration.IndexMode;
 import com.romanpierson.vertx.elasticsearch.indexer.ElasticSearchIndexerConstants;
 import com.romanpierson.vertx.elasticsearch.indexer.ElasticSearchIndexerConstants.Configuration;
+import com.romanpierson.vertx.elasticsearch.indexer.ElasticSearchIndexerConstants.Message.Structure.Field;
 import com.romanpierson.vertx.elasticsearch.indexer.authentication.impl.BasicAuthentication;
 import com.romanpierson.vertx.elasticsearch.indexer.authentication.impl.BearerAuthentication;
 
@@ -41,10 +42,9 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.HttpRequest;
+import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.WebClientOptions;
-
-import static com.romanpierson.vertx.elasticsearch.indexer.ElasticSearchIndexerConstants.Message.Structure.Field;
 
 /**
  * 
@@ -141,6 +141,7 @@ public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 		Long port = jsonInstance.getLong(Configuration.PORT, null);
 		String indexModeCode = jsonInstance.getString(Configuration.INDEX_MODE);
 		String indexNameOrPattern = jsonInstance.getString(Configuration.INDEX_NAME_OR_PATTERN);
+		String indexTimestampFieldName = jsonInstance.getString(Configuration.INDEX_TIMESTAMP_FIELD_NAME, "@timestamp");
 		boolean isSSL = jsonInstance.getBoolean(Configuration.SSL, false);
 		boolean isSSLtrustAll = jsonInstance.getBoolean(Configuration.SSL_TRUST_ALL, false);
 		JsonObject authentication = jsonInstance.getJsonObject(Configuration.AUTHENTICATION, null);
@@ -149,6 +150,7 @@ public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 
 		ElasticSearchIndexerConfiguration config = new ElasticSearchIndexerConfiguration().setIdentifier(identifier)
 				.setIndexFlavour(indexFlavour)
+				.setIndexTimestampFieldName(indexTimestampFieldName)
 				.setHost(host).setIndexMode(indexMode).setIndexNameOrPattern(indexNameOrPattern)
 				.setPort(port.intValue());
 
@@ -267,9 +269,11 @@ public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 			request.sendBuffer(Buffer.buffer(indexString), ar -> {
 				if (ar.succeeded()) {
 
-					JsonObject response = ar.result().bodyAsJsonObject();
-
-					if (response == null || response.getBoolean("errors", true)) {
+					HttpResponse<Buffer> result = ar.result();
+					
+					JsonObject response = result.bodyAsJsonObject();
+					
+					if (result.statusCode() != 200 || response == null || response.getBoolean("errors", true)) {
 						handleError(values, null);
 						LOG.error("Error response received from ES \n{}", response.encodePrettily());
 					}
@@ -350,7 +354,7 @@ public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 		
 		if (!this.cachedIndexPrefix.containsKey(cacheKey)) {
 			
-			//We still need to create that entry
+			// We still need to create that entry
 			// For static its straight
 			String formattedIndexPattern = indexerConfiguration.getIndexNameOrPattern();
 			
@@ -393,11 +397,11 @@ public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 
 			JsonObject jsonValue = value.getJsonObject(Field.MESSAGE.getFieldName());
 
-			jsonValue.put(Field.TIMESTAMP.getFieldName(), indexTimeStampPattern.format(value.getJsonObject(Field.META.getFieldName()).getLong(Field.TIMESTAMP.getFieldName())));
+			jsonValue.put(indexerConfiguration.getIndexTimestampFieldName(), indexTimeStampPattern.format(value.getJsonObject(Field.META.getFieldName()).getLong(Field.TIMESTAMP.getFieldName())));
 
 			sb.append(jsonValue.encode()).append(newLine);
 		}
-
+		
 		return sb.toString();
 	}
 
