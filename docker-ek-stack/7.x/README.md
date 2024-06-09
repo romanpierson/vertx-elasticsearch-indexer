@@ -2,7 +2,7 @@
 
 Dockerized setup for testing 7.x version of Elasticsearch / Kibana
 
-Using latest version `7.17.15`.
+Using latest version `7.17.21`.
 
 Kibana user is `elastic`/`changeme`
 
