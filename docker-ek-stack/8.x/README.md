@@ -2,7 +2,7 @@
 
 Dockerized setup for testing 8.x version of Elasticsearch / Kibana
 
-Using latest version `8.14.1`.
+Using latest version `8.15.1`.
 
 Kibana user is `elastic`/`changeme`
 
