@@ -19,5 +19,4 @@ jobs:
           java-version: 17
           distribution: temurin
       - name: Build project
-        run: ./gradlew build sonar
- 
+	    run: ./gradlew clean build sonarqube -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=romanpierson -Dsonar.projectKey=romanpierson_vertx-elasticsearch-indexer
