@@ -16,7 +16,7 @@ Just add it as a dependency to your project (gradle example)
 
 ```xml
 dependencies {
-	compile 'com.romanpierson:vertx-elasticsearch-indexer:1.3.0'
+	compile 'com.romanpierson:vertx-elasticsearch-indexer:2.3.0'
 }
 ```
 
@@ -28,7 +28,7 @@ Those two versions are functional equivalent and you should just be able to swit
 
 Therefore minor version will stay identical but major version will identify if the library is targeted to be used with `vert.x 4` (1) or `vert.x 5` (2)
 
-Accesslog version 4.x / 5.x | Vertx version
+ES Indexer version 4.x / 5.x | Vertx version
 ----|------
 1.3.0 / 2.3.0  | 4.5.1 > / 5.0.0.CR3 >
 
