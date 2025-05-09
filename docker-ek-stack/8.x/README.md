@@ -2,7 +2,7 @@
 
 Dockerized setup for testing 8.x version of Elasticsearch / Kibana
 
-Using latest version `8.15.1`.
+Using latest version `8.18.0`.
 
 Kibana user is `elastic`/`changeme`
 
@@ -11,7 +11,7 @@ ES and Kibana data is persisted in relative folder `data`. If you want to start 
 ## Create / Start
 
 ```xml
-docker-compose up -d
+podman-compose up -d
 ```
 
 ## Connect Kibana to your ES indexes
