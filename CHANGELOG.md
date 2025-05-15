@@ -1,18 +1,23 @@
 ## Changelog
 
+### 2.3.0 (Vert.x 5)
 
-#### 1.0.0
+(2025-05-15)
 
-(2019-02-14)
+* Functional identical version of `1.3.0` for `vert.x 5`
 
-* Initial version
+### 1.3.0
 
-#### 1.1.0
+(2024-01-13)
 
-(2020-12-17)
+* Its now possible to define the name for the timestamp using property `indexTimestampFieldName` - default is `@timestamp` - this in axiom internally translates into `_time`
 
-* Upgrade to Vertx 4
 
+### 1.2.1
+
+(2023-12-10)
+
+* Fixed issues with multiple static indexes prefix caching
 
 ### 1.2.0
 
@@ -27,14 +32,22 @@
 * Added ES 7.x and 8.x playgrounds
 * Removed requirement for jackson databind library
 
-### 1.2.1
+#### 1.1.0
 
-(2023-12-10)
+(2020-12-17)
 
-* Fixed issues with multiple static indexes prefix caching
+* Upgrade to Vertx 4
 
-### 1.3.0
+#### 1.0.0
 
-(2024-01-13)
+(2019-02-14)
 
-* Its now possible to define the name for the timestamp using property `indexTimestampFieldName` - default is `@timestamp` - this in axiom internally translates into `_time`
+* Initial version
+
+
+
+
+
+
+
+

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2024 Roman Pierson
+ * Copyright (c) 2016-2025 Roman Pierson
  * ------------------------------------------------------
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Apache License v2.0 
@@ -125,7 +125,7 @@ public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 	private ElasticSearchIndexerConfiguration readInstanceConfig(final Object xInstance) {
 
 		if (!(xInstance instanceof JsonObject)) {
-			throw new RuntimeException("Invalid instance configuration");
+			throw new RuntimeException("Invalid instance configuration - is of type " + (xInstance == null ? "-" : xInstance.getClass()));
 		}
 
 		final JsonObject jsonInstance = (JsonObject) xInstance;
