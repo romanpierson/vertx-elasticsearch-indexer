@@ -124,11 +124,11 @@ public class ElasticSearchIndexerVerticle extends AbstractVerticle {
 
 	private ElasticSearchIndexerConfiguration readInstanceConfig(final Object xInstance) {
 
-		if (!(xInstance instanceof Map)) {
-			throw new RuntimeException("Invalid instance configuration");
+		if (!(xInstance instanceof JsonObject)) {
+			throw new RuntimeException("Invalid instance configuration - is of type " + (xInstance == null ? "-" : xInstance.getClass()));
 		}
 
-		final JsonObject jsonInstance = new JsonObject((Map<String, Object>) xInstance);
+		final JsonObject jsonInstance = (JsonObject) xInstance;
 		
 		final String identifier = jsonInstance.getString(Configuration.IDENTIFIER);
 		
